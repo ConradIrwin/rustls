@@ -426,7 +426,7 @@ fn emit_client_hello_for_retry(
         session_id: input.session_id,
         cipher_suites,
         compression_methods: vec![Compression::Null],
-        extensions: exts,
+        extensions: Box::new(exts),
     };
 
     let ech_grease_name = input.server_name.clone();

@@ -562,7 +562,7 @@ impl EchState {
             compression_methods: outer_hello.compression_methods.clone(),
 
             // We will build up the included extensions ourselves.
-            extensions: ClientExtensions::default(),
+            extensions: Box::new(ClientExtensions::default()),
 
             // Set the inner hello random to the one we generated when creating the ECH state.
             // We hold on to the inner_hello_random in the ECH state to use later for confirming

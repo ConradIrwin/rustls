@@ -1,3 +1,4 @@
+use alloc::boxed::Box;
 use alloc::collections::BTreeSet;
 #[cfg(feature = "logging")]
 use alloc::string::String;
@@ -1176,7 +1177,7 @@ pub struct ClientHelloPayload {
     pub session_id: SessionId,
     pub cipher_suites: Vec<CipherSuite>,
     pub compression_methods: Vec<Compression>,
-    pub extensions: ClientExtensions<'static>,
+    pub extensions: Box<ClientExtensions<'static>>,
 }
 
 impl Codec<'_> for ClientHelloPayload {
@@ -1191,7 +1192,7 @@ impl Codec<'_> for ClientHelloPayload {
             session_id: SessionId::read(r)?,
             cipher_suites: Vec::read(r)?,
             compression_methods: Vec::read(r)?,
-            extensions: ClientExtensions::read(r)?.into_owned(),
+            extensions: Box::new(ClientExtensions::read(r)?.into_owned()),
         };
 
         match r.any_left() {
