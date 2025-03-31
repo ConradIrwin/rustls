@@ -32,7 +32,7 @@ mod connection {
     use crate::error::Error;
     use crate::msgs::base::Payload;
     use crate::msgs::deframer::buffers::{DeframerVecBuffer, Locator};
-    use crate::msgs::handshake::{ClientExtensions, ServerExtension};
+    use crate::msgs::handshake::{ClientExtensionsTemplate, ServerExtension};
     use crate::msgs::message::InboundPlainMessage;
     use crate::server::{ServerConfig, ServerConnectionData};
     use crate::sync::Arc;
@@ -178,11 +178,11 @@ mod connection {
             }
 
             let exts = match quic_version {
-                Version::V1Draft => ClientExtensions {
+                Version::V1Draft => ClientExtensionsTemplate {
                     transport_parameters_draft: Some(Payload::new(params)),
                     ..Default::default()
                 },
-                Version::V1 | Version::V2 => ClientExtensions {
+                Version::V1 | Version::V2 => ClientExtensionsTemplate {
                     transport_parameters: Some(Payload::new(params)),
                     ..Default::default()
                 },

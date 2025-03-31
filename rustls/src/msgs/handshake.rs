@@ -598,6 +598,32 @@ impl TlsListElement for CertificateCompressionAlgorithm {
     const SIZE_LEN: ListLength = ListLength::U8;
 }
 
+/// A precursor to `ClientExtensions`, allowing customisation.
+///
+/// This is smaller than `ClientExtensions`, as it only contains the extensions
+/// we need to vary between different protocols (eg, TCP-TLS versus QUIC).
+#[derive(Clone, Default)]
+pub(crate) struct ClientExtensionsTemplate<'a> {
+    /// QUIC transport parameters (RFC9001 prior to draft 33)
+    pub(crate) transport_parameters_draft: Option<Payload<'a>>,
+
+    /// QUIC transport parameters (RFC9001)
+    pub(crate) transport_parameters: Option<Payload<'a>>,
+}
+
+impl ClientExtensionsTemplate<'_> {
+    pub(crate) fn into_owned(self) -> ClientExtensionsTemplate<'static> {
+        let Self {
+            transport_parameters,
+            transport_parameters_draft,
+        } = self;
+        ClientExtensionsTemplate {
+            transport_parameters: transport_parameters.map(|x| x.into_owned()),
+            transport_parameters_draft: transport_parameters_draft.map(|x| x.into_owned()),
+        }
+    }
+}
+
 extension_struct! {
     /// A representation of extensions present in a `ClientHello` message
     ///

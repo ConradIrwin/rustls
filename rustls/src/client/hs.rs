@@ -31,9 +31,9 @@ use crate::msgs::enums::{
 };
 use crate::msgs::handshake::EncryptedClientHello;
 use crate::msgs::handshake::{
-    CertificateStatusRequest, ClientExtensions, ClientHelloPayload, ClientSessionTicket,
-    ConvertProtocolNameList, HandshakeMessagePayload, HandshakePayload, HasServerExtensions,
-    HelloRetryRequest, KeyShareEntry, Random, SessionId,
+    CertificateStatusRequest, ClientExtensions, ClientExtensionsTemplate, ClientHelloPayload,
+    ClientSessionTicket, ConvertProtocolNameList, HandshakeMessagePayload, HandshakePayload,
+    HasServerExtensions, HelloRetryRequest, KeyShareEntry, Random, SessionId,
 };
 use crate::msgs::message::{Message, MessagePayload};
 use crate::msgs::persist;
@@ -101,7 +101,7 @@ fn find_session(
 
 pub(super) fn start_handshake(
     server_name: ServerName<'static>,
-    extra_exts: ClientExtensions<'_>,
+    extra_exts: ClientExtensionsTemplate<'_>,
     config: Arc<ClientConfig>,
     cx: &mut ClientContext<'_>,
 ) -> NextStateOrError<'static> {
@@ -207,7 +207,7 @@ struct ExpectServerHello {
 
 struct ExpectServerHelloOrHelloRetryRequest {
     next: ExpectServerHello,
-    extra_exts: ClientExtensions<'static>,
+    extra_exts: ClientExtensionsTemplate<'static>,
 }
 
 struct ClientHelloInput {
@@ -227,7 +227,7 @@ fn emit_client_hello_for_retry(
     mut transcript_buffer: HandshakeHashBuffer,
     retryreq: Option<&HelloRetryRequest>,
     key_share: Option<Box<dyn ActiveKeyExchange>>,
-    extra_exts: ClientExtensions<'_>,
+    extra_exts: ClientExtensionsTemplate<'_>,
     suite: Option<SupportedCipherSuite>,
     mut input: ClientHelloInput,
     cx: &mut ClientContext<'_>,
@@ -252,6 +252,11 @@ fn emit_client_hello_for_retry(
     // should be unreachable thanks to config builder
     assert!(!supported_versions.is_empty());
 
+    let ClientExtensionsTemplate {
+        transport_parameters,
+        transport_parameters_draft,
+    } = extra_exts.clone().into_owned();
+
     let mut exts = ClientExtensions {
         // offer groups which are usable for any offered version
         named_groups: Some(
@@ -275,7 +280,9 @@ fn emit_client_hello_for_retry(
         ),
         extended_master_secret_request: Some(()),
         certificate_status_request: Some(CertificateStatusRequest::build_ocsp()),
-        ..extra_exts.clone().into_owned()
+        transport_parameters,
+        transport_parameters_draft,
+        ..Default::default()
     };
 
     if support_tls13 {
