@@ -37,7 +37,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut incoming_tls = vec![0; INCOMING_TLS_BUFSIZE];
     let mut outgoing_tls = vec![0; OUTGOING_TLS_INITIAL_BUFSIZE];
 
-    converse(&config, &mut incoming_tls, &mut outgoing_tls).await?;
+    converse(
+        &config,
+        &mut incoming_tls,
+        &mut outgoing_tls,
+        "wow, what to do with this string?",
+    )
+    .await?;
 
     Ok(())
 }
