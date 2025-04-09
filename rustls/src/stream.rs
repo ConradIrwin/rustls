@@ -25,6 +25,7 @@ where
     /// Make a new Stream using the Connection `conn` and socket-like object
     /// `sock`.  This does not fail and does no IO.
     pub fn new(conn: &'a mut C, sock: &'a mut T) -> Self {
+        std::dbg!(std::any::type_name::<T>());
         Self { conn, sock }
     }
 
@@ -122,6 +123,7 @@ where
         // Callers will learn of permanent errors on the next call.
         let _ = self.conn.complete_io(self.sock);
 
+        std::dbg!(&len);
         Ok(len)
     }
 
@@ -138,6 +140,7 @@ where
         // Callers will learn of permanent errors on the next call.
         let _ = self.conn.complete_io(self.sock);
 
+        std::dbg!(&len);
         Ok(len)
     }
 

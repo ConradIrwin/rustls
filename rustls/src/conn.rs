@@ -328,6 +328,7 @@ https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof"
         }
 
         fn write_vectored(&mut self, bufs: &[io::IoSlice<'_>]) -> io::Result<usize> {
+            std::dbg!("ah...");
             self.sink.write_vectored(bufs)
         }
 
@@ -358,6 +359,7 @@ https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof"
         }
 
         fn write_vectored(&mut self, bufs: &[io::IoSlice<'_>]) -> io::Result<usize> {
+            std::dbg!("here,..");
             let payload_owner: Vec<&[u8]>;
             let payload = match bufs.len() {
                 0 => return Ok(0),

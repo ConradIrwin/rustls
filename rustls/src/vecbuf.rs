@@ -200,8 +200,15 @@ impl ChunkVecBuffer {
             prefix = 0;
         }
         let len = cmp::min(bufs.len(), self.chunks.len());
+        std::println!("about to write");
         let used = wr.write_vectored(&bufs[..len])?;
-        assert!(used <= self.len(), "illegal write_vectored return value");
+
+        assert!(
+            used <= self.len(),
+            "illegal write_vectored return value {} <= {}",
+            used,
+            self.len()
+        );
         self.consume(used);
         Ok(used)
     }

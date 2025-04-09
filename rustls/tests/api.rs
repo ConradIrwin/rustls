@@ -2676,6 +2676,7 @@ where
     }
 
     fn write_vectored(&mut self, b: &[io::IoSlice<'_>]) -> io::Result<usize> {
+        dbg!("here...");
         if self.buffered {
             self.buffer
                 .extend(b.iter().map(|s| s.to_vec()));
